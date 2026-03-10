@@ -30,21 +30,30 @@ void design() {
 
 // Add patient
 void addPatient() {
+    int numPatient;
+    cout << "How many patient do you want to add?: ";
+    cin >> numPatient;
+
+    //to check if may space pa
     if(patientCount >= MAX) {
         cout << "Hospital is full!\n";
         return;
     }
 
-    cout << "Enter patient name: ";
-    cin.ignore();
-    getline(cin, patientNames[patientCount]);
-    cout << "Enter room number: ";
-    cin >> patientRooms[patientCount];
-    cout << "Enter bed number: ";
-    cin >> patientBeds[patientCount];
+    for(int c = 0; c < numPatient; c++){
+        cout << "\n----- Patient " << (c + 1) << " ----\n";
+        cout << "Enter patient name: ";
+        cin.ignore();
+        getline(cin, patientNames[patientCount]);
+        cout << "Enter room number: ";
+        cin >> patientRooms[patientCount];
+        cout << "Enter bed number: ";
+        cin >> patientBeds[patientCount];
 
-    patientCount++;
-    cout << "\nPatient added successfully!\n";
+        patientCount++;
+
+}
+        cout << "\nPatient added successfully!\n";
 }
 
 // Display all
@@ -62,7 +71,7 @@ void displayAll() {
     }
 }
 
-// Linear search by name
+// Linear search by name // 1d
 void searchByName() {
     string name;
     cout << "Enter patient name: ";
@@ -81,7 +90,7 @@ void searchByName() {
     cout << "Patient not found.\n";
 }
 
-// Binary search by room number
+// Binary search by room number //1d
 void searchByRoom() {
     int searchRoom;
     cout << "Enter room number to search: ";
