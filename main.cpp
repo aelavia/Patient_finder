@@ -68,8 +68,6 @@ int main()
         cin.ignore();
         getline(cin, name);
 
-        //system("cls");  // Clear before showing result
-
         bool found = false;
         for (int r = 0; r < ROOMS; r++) {
             for (int c = 0; c < beds; c++) {
@@ -101,8 +99,6 @@ int main()
     int roomNo;
     cout << "Enter room number (101-105): ";
     cin >> roomNo;
-
-  //  system("cls");  // Clear before showing result
 
     int low = 0;
     int high = ROOMS - 1;
@@ -144,3 +140,4 @@ int main()
     system("cls");  // Clear before going back to menu
     design();       // Show design again
 }
+
