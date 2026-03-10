@@ -19,7 +19,7 @@ int main()
         {"Maria Santos", "Juan Cruz", ""},
         {"Ana Reyes", "", "Pedro Garcia"},
         {"Sofia Lopez", "Carlos Mendoza", "Luisa Torres"},
-        {"", "Miguel Ramos", "Elena Flores"},
+        {"", "Albert Einstein", "Gloria Flores"},
         {"Diego Morales", "", "Carmen Silva"}
     };
     int room[ROOMS] = {101, 102, 103, 104, 105};
@@ -68,6 +68,8 @@ int main()
         cin.ignore();
         getline(cin, name);
 
+
+
         bool found = false;
         for (int r = 0; r < ROOMS; r++) {
             for (int c = 0; c < beds; c++) {
@@ -99,6 +101,7 @@ int main()
     int roomNo;
     cout << "Enter room number (101-105): ";
     cin >> roomNo;
+
 
     int low = 0;
     int high = ROOMS - 1;
@@ -140,4 +143,3 @@ int main()
     system("cls");  // Clear before going back to menu
     design();       // Show design again
 }
-
