@@ -6,7 +6,6 @@ using namespace std;
     const int ROOMS = 5;
     const int beds = 3;
 
-
     //func. prototype
     void design();
     void searchRoom(string roomBed[][beds], int room[]);
@@ -145,3 +144,4 @@ int main()
             cout << "Bed " << i + 1 << ": Empty\n";
     }
 }
+
