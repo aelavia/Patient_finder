@@ -1,0 +1,306 @@
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <iomanip>
+#include <cctype>
+
+using namespace std;
+
+const int COL = 3;
+
+void header();
+int menu();
+void displayPatients(int roomBed[][COL], string name[][COL], int id[][COL], int row, int col);
+void searchByRoom(int roomBed[][COL], string name[][COL], int id[][COL], int row, int col);
+void searchByName(int roomBed[][COL], string name[][COL], int id[][COL], int row, int col);
+void searchByID(int roomBed[][COL], string name[][COL], int id[][COL], int row, int col, bool sortedByID);
+
+int main(){
+    const int ROOMS = 5;
+    const int BEDS  = 3;
+    int roomBed[ROOMS][BEDS] = {{101, 102, 103},
+                                {201, 202, 203},
+                                {301, 302, 303},
+                                {401, 402, 403},
+                                {501, 502, 503}};
+    string patientName[ROOMS][BEDS] = {{"Maria Clara", "Juanito",    "Theresa"},
+                                       {"Blessilda",   "Jose",       "Christine"},
+                                       {"Joy",         "Rogelio",    "Baby"},
+                                       {"Rafael",      "Luningning", "Jeff"},
+                                       {"Marites",     "Maria",      "Junjun"}};
+    int patientID[ROOMS][BEDS] = {{842, 127, 559},
+                                  {314, 901, 208},
+                                  {673, 482, 115},
+                                  {736, 395, 520},
+                                  {264, 811, 602}};
+    int choice;
+    int total = ROOMS * BEDS;
+    bool sortedByID = false;
+
+    do {
+        header();
+        choice = menu();
+
+        switch(choice){
+            case 1:
+                displayPatients(roomBed, patientName, patientID, ROOMS, BEDS);
+                break;
+
+            case 2:
+                // Sort by Name - sequential bubble sort across all patients
+                // room travels automatically since roomBed moves with the patient
+                sortedByID = false;
+                for(int i = 0; i < total - 1; i++){
+                    for(int j = 0; j < total - 1 - i; j++){
+                        int r1 = j / BEDS,       c1 = j % BEDS;
+                        int r2 = (j + 1) / BEDS, c2 = (j + 1) % BEDS;
+
+                        if(patientName[r1][c1] > patientName[r2][c2]){
+                            swap(patientName[r1][c1], patientName[r2][c2]);
+                            swap(patientID[r1][c1],   patientID[r2][c2]);
+                            swap(roomBed[r1][c1],     roomBed[r2][c2]);
+                        }
+                    }
+                }
+                cout << "\nPatients sorted by Name successfully." << endl;
+                break;
+
+            case 3:
+                // Sort by ID - sequential bubble sort across all patients
+                sortedByID = true;
+                for(int i = 0; i < total - 1; i++){
+                    for(int j = 0; j < total - 1 - i; j++){
+                        int r1 = j / BEDS,       c1 = j % BEDS;
+                        int r2 = (j + 1) / BEDS, c2 = (j + 1) % BEDS;
+
+                        if(patientID[r1][c1] > patientID[r2][c2]){
+                            swap(patientName[r1][c1], patientName[r2][c2]);
+                            swap(patientID[r1][c1],   patientID[r2][c2]);
+                            swap(roomBed[r1][c1],     roomBed[r2][c2]);
+                        }
+                    }
+                }
+                cout << "\nPatients sorted by ID successfully." << endl;
+                break;
+
+            case 4:
+                // Binary search - roomBed is always in fixed ascending order (101..503)
+                searchByRoom(roomBed, patientName, patientID, ROOMS, BEDS);
+                break;
+
+            case 5:
+                // Sequential search - name order is unpredictable
+                searchByName(roomBed, patientName, patientID, ROOMS, BEDS);
+                break;
+
+            case 6:
+                // Binary if sorted by ID, sequential otherwise
+                searchByID(roomBed, patientName, patientID, ROOMS, BEDS, sortedByID);
+                break;
+
+            case 7:
+                cout << "\nThank you for using Patient Finder." << endl;
+                break;
+
+            default:
+                cout << "\nInvalid choice. Please try again." << endl;
+        }
+
+    } while(choice != 7);
+
+    return 0;
+}
+
+void header(){
+    cout << "===============================================" << endl;
+    cout << "-------         PATIENT FINDER           ------" << endl;
+    cout << "===============================================" << endl;
+}
+
+int menu(){
+    cout << "[1] View Patients List"          << endl;
+    cout << "[2] Sort Patients by Name"       << endl;
+    cout << "[3] Sort Patients by ID"         << endl;
+    cout << "[4] Search Patient by Room/Bed"  << endl;
+    cout << "[5] Search Patient by Name"      << endl;
+    cout << "[6] Search Patient by ID"        << endl;
+    cout << "[7] Exit"                        << endl;
+
+    int choice = 0;
+    cout << "\nEnter choice: ";
+    cin >> choice;
+    cin.ignore();
+
+    return choice;
+}
+
+void displayPatients(int roomBed[][COL], string name[][COL], int id[][COL], int row, int col){
+    cout << "------------------------------" << endl;
+    cout << "View Patients List" << endl;
+    cout << "\n======================================" << endl;
+    cout << left << setw(6) << "ID" << setw(20) << "Name" << setw(11) << "Room No." << "Bed No." << endl;
+    cout << "--------------------------------------" << endl;
+
+    for(int i = 0; i < row; i++){
+        for(int j = 0; j < col; j++){
+            // Room No. derived from roomBed (e.g. 303 / 100 = 3)
+            cout << left << setw(6) << id[i][j] << setw(20) << name[i][j] << setw(10) << roomBed[i][j] / 100 << roomBed[i][j] << endl;
+        }
+    }
+    cout << endl;
+}
+
+void searchByRoom(int roomBed[][COL], string name[][COL], int id[][COL], int row, int col){
+    char again;
+    do {
+    int searchRoom, searchBedSlot;
+    cout << "------------------------------" << endl;
+    cout << "Search Patient by Room/Bed" << endl;
+    cout << "\nRoom No.: ";
+    cin >> searchRoom;
+    cout << "Bed No. (1-" << COL << "): ";
+    cin >> searchBedSlot;
+    cin.ignore();
+
+    // Reconstruct full bed code (e.g. Room 3, Bed 2 -> 302)
+    int searchBed = searchRoom * 100 + searchBedSlot;
+
+    // Binary search - roomBed is always stored in ascending order (101,102...501,502,503)
+    int total = row * col;
+    int lo = 0, hi = total - 1, result = -1;
+
+    while(lo <= hi){
+        int mid = (lo + hi) / 2;
+        int r = mid / col, c = mid % col;
+
+        if(roomBed[r][c] == searchBed){
+            result = mid;
+            break;
+        } else if(roomBed[r][c] < searchBed){
+            lo = mid + 1;
+        } else {
+            hi = mid - 1;
+        }
+    }
+
+    if(result != -1){
+        int r = result / col, c = result % col;
+        cout << "\nPatient Found!" << endl;
+        cout << "Name: "       << name[r][c]          << endl;
+        cout << "Patient ID: " << id[r][c]             << endl;
+        cout << "Room No.: "   << roomBed[r][c] / 100  << endl;
+        cout << "Bed No.: "    << roomBed[r][c]         << endl;
+    } else {
+        cout << "\nNo patient found in Room " << searchRoom << ", Bed " << searchBed << "." << endl;
+    }
+
+    cout << "\nDo you want to search again? (Y/N): ";
+    cin >> again;
+    cin.ignore();
+    } while(again == 'Y' || again == 'y');
+
+    cout << endl;
+}
+
+void searchByName(int roomBed[][COL], string name[][COL], int id[][COL], int row, int col){
+    char again;
+    do {
+    string searchName;
+    cout << "------------------------------" << endl;
+    cout << "Search Patient by Name" << endl;
+    cout << "\nEnter Patient Name: ";
+    getline(cin, searchName);
+
+    // Convert input to lowercase for case-insensitive search
+    string lowerSearch = searchName;
+    for(int c = 0; c < (int)lowerSearch.size(); c++)
+        lowerSearch[c] = tolower(lowerSearch[c]);
+
+    // Sequential search - name order is unpredictable
+    bool found = false;
+    for(int i = 0; i < row; i++){
+        for(int j = 0; j < col; j++){
+            string lowerName = name[i][j];
+            for(int c = 0; c < (int)lowerName.size(); c++)
+                lowerName[c] = tolower(lowerName[c]);
+
+            if(lowerName.find(lowerSearch) != string::npos){
+                cout << "\nPatient Found!" << endl;
+                cout << "ID: "       << id[i][j]             << endl;
+                cout << "Room No.: " << roomBed[i][j] / 100  << endl;
+                cout << "Bed No.: "  << roomBed[i][j]         << endl;
+                found = true;
+            }
+        }
+    }
+
+    if(!found)
+        cout << "\nNo patient found with name \"" << searchName << "\"." << endl;
+
+    cout << "\nDo you want to search again? (Y/N): ";
+    cin >> again;
+    cin.ignore();
+    } while(again == 'Y' || again == 'y');
+
+    cout << endl;
+}
+
+void searchByID(int roomBed[][COL], string name[][COL], int id[][COL], int row, int col, bool sortedByID){
+    char again;
+    do {
+    int searchID;
+    cout << "------------------------------" << endl;
+    cout << "Search Patient by ID" << endl;
+    cout << "\nEnter Patient ID: ";
+    cin >> searchID;
+    cin.ignore();
+
+    bool found = false;
+
+    if(sortedByID){
+        // Binary search - only valid when sorted by ID
+        int total = row * col;
+        int lo = 0, hi = total - 1;
+
+        while(lo <= hi){
+            int mid = (lo + hi) / 2;
+            int r = mid / col, c = mid % col;
+
+            if(id[r][c] == searchID){
+                cout << "\nPatient Found! (Binary Search)" << endl;
+                cout << "Name: "      << name[r][c]            << endl;
+                cout << "Room No.: "  << roomBed[r][c] / 100   << endl;
+                cout << "Bed No.: "   << roomBed[r][c]          << endl;
+                found = true;
+                break;
+            } else if(id[r][c] < searchID){
+                lo = mid + 1;
+            } else {
+                hi = mid - 1;
+            }
+        }
+    } else {
+        // Sequential search - ID order is unpredictable
+        for(int i = 0; i < row; i++){
+            for(int j = 0; j < col; j++){
+                if(id[i][j] == searchID){
+                    cout << "\nPatient Found! (Sequential Search)" << endl;
+                    cout << "Name: "      << name[i][j]            << endl;
+                    cout << "Room No.: "  << roomBed[i][j] / 100   << endl;
+                    cout << "Bed No.: "   << roomBed[i][j]          << endl;
+                    found = true;
+                }
+            }
+        }
+    }
+
+    if(!found)
+        cout << "\nNo patient found with ID " << searchID << "." << endl;
+
+    cout << "\nDo you want to search again? (Y/N): ";
+    cin >> again;
+    cin.ignore();
+    } while(again == 'Y' || again == 'y');
+
+    cout << endl;
+}
